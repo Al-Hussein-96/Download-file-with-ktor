@@ -13,7 +13,9 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.alhussein.downloadfilewithktor.databinding.FragmentDownloadFileBinding
+import com.alhussein.downloadfilewithktor.utils.setupSnackbar
 import com.alhussein.downloadfilewithktor.viewmodel.DownloadFileViewModel
+import com.google.android.material.snackbar.Snackbar
 
 
 class DownloadFileFragment : Fragment() {
@@ -48,14 +50,21 @@ class DownloadFileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupSnackbar()
+
         viewModel.downloadProgress.observe(viewLifecycleOwner, {
             binding.progressCircular.progress = it
         })
 
     }
 
+    private fun setupSnackbar() {
+        view?.setupSnackbar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
+
+    }
+
     private fun onDownload() {
-        with(viewModel) { onDownload(binding.uriEditText.text.toString()) }
+        with(viewModel) { onDownload("https://shaadoow.net/recording/video/vRP8OcKzFBM85q0OrLUpqsPxJkdiUiXLmVRfSylH.mov") }
 
     }
 

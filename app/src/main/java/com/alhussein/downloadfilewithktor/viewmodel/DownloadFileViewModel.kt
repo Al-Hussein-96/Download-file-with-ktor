@@ -6,10 +6,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.alhussein.downloadfilewithktor.download.DownloadResult
 import com.alhussein.downloadfilewithktor.download.downloadFile
+import com.alhussein.downloadfilewithktor.utils.Event
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
+import timber.log.Timber
 
 class DownloadFileViewModel : ViewModel() {
 
@@ -19,35 +21,37 @@ class DownloadFileViewModel : ViewModel() {
     private val _downloadProgress = MutableLiveData(0)
     val downloadProgress : LiveData<Int> = _downloadProgress
 
+    private val _snackbarText = MutableLiveData<Event<String>>()
+    val snackbarText: LiveData<Event<String>> = _snackbarText
+
 
 
     init {
-        Log.i("Mohammad", "DownloadFileViewModel created!")
+        Timber.i("DownloadFileViewModel created!")
     }
 
 
 
     override fun onCleared() {
         super.onCleared()
-        Log.i("Mohammad", "DownloadFileViewModel destroyed!")
+        Timber.i("DownloadFileViewModel destroyed!")
 
     }
 
     @ExperimentalCoroutinesApi
     fun onDownload(url: String) {
 
-        val ktor = HttpClient(Android)
-
-
 
         CoroutineScope(Dispatchers.IO).launch {
-            ktor.downloadFile("https://shaadoow.net/recording/video/vRP8OcKzFBM85q0OrLUpqsPxJkdiUiXLmVRfSylH.mov").collect {
+            downloadFile(url).collect {
                 withContext(Dispatchers.Main){
                     when(it){
                         is DownloadResult.Success -> {
+                            _snackbarText.value = Event("Downloaded successfully")
 
                         }
                         is DownloadResult.Error -> {
+                            _snackbarText.value = Event(it.message)
 
                         }
                         is DownloadResult.Progress -> {
