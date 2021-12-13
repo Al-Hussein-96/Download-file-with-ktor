@@ -1,19 +1,23 @@
 package com.alhussein.downloadfilewithktor.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.alhussein.downloadfilewithktor.download.DownloadResult
 import com.alhussein.downloadfilewithktor.download.downloadFile
 import com.alhussein.downloadfilewithktor.utils.Event
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import timber.log.Timber
+import javax.inject.Inject
 
-class DownloadFileViewModel : ViewModel() {
+@HiltViewModel
+class DownloadFileViewModel @Inject constructor(private val coroutineScope: CoroutineScope) : ViewModel() {
+
+
 
     private val _url = MutableLiveData("test")
     val url: LiveData<String> = _url
@@ -40,10 +44,10 @@ class DownloadFileViewModel : ViewModel() {
 
     @ExperimentalCoroutinesApi
     fun onDownload(url: String) {
+        val httpClient = HttpClient(Android)
 
-
-        CoroutineScope(Dispatchers.IO).launch {
-            downloadFile(url).collect {
+        coroutineScope.launch {
+            httpClient.downloadFile(url).collect {
                 withContext(Dispatchers.Main){
                     when(it){
                         is DownloadResult.Success -> {

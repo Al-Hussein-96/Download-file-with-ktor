@@ -18,10 +18,8 @@ import java.io.File
 
 
 @ExperimentalCoroutinesApi
-suspend fun downloadFile(url: String): Flow<DownloadResult> {
-
+suspend fun HttpClient.downloadFile(url: String): Flow<DownloadResult> {
     return callbackFlow {
-
         try {
             val client = HttpClient(Android)
             val file = File.createTempFile("files", "index")
@@ -57,8 +55,6 @@ suspend fun downloadFile(url: String): Flow<DownloadResult> {
         }
         awaitClose()
 
-
     }
-
 
 }

@@ -16,8 +16,10 @@ import com.alhussein.downloadfilewithktor.databinding.FragmentDownloadFileBindin
 import com.alhussein.downloadfilewithktor.utils.setupSnackbar
 import com.alhussein.downloadfilewithktor.viewmodel.DownloadFileViewModel
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 
 
+@AndroidEntryPoint
 class DownloadFileFragment : Fragment() {
     private lateinit var binding: FragmentDownloadFileBinding
 
@@ -32,7 +34,6 @@ class DownloadFileFragment : Fragment() {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_download_file, container, false)
 
-        Log.i("Mohammad", "Called ViewModelProvider.get")
         viewModel = ViewModelProvider(this).get(DownloadFileViewModel::class.java)
 
         binding.buttonPaste.setOnClickListener {
