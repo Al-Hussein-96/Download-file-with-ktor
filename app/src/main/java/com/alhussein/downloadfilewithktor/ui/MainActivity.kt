@@ -1,11 +1,8 @@
-package com.alhussein.downloadfilewithktor
+package com.alhussein.downloadfilewithktor.ui
 
-import android.content.ClipData
-import android.content.ClipboardManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Toast
-import androidx.core.content.ContextCompat
+import com.alhussein.downloadfilewithktor.R
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -15,6 +12,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
 
 //        myClipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager?;
 //

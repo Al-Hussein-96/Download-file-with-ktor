@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/downloadFileFragment"
-        android:name="com.alhussein.downloadfilewithktor.DownloadFileFragment"
+        android:name="com.alhussein.downloadfilewithktor.ui.DownloadFileFragment"
         android:label="fragment_download_file"
         tools:layout="@layout/fragment_download_file" />
 </navigation>

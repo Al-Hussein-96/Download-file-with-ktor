@@ -1,8 +1,9 @@
-package com.alhussein.downloadfilewithktor
+package com.alhussein.downloadfilewithktor.ui
 
-
+import android.content.ClipboardManager
+import android.content.Context.CLIPBOARD_SERVICE
+import androidx.fragment.app.activityViewModels
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -10,20 +11,21 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import com.alhussein.downloadfilewithktor.R
 import com.alhussein.downloadfilewithktor.databinding.FragmentDownloadFileBinding
 import com.alhussein.downloadfilewithktor.utils.setupSnackbar
 import com.alhussein.downloadfilewithktor.viewmodel.DownloadFileViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 
 @AndroidEntryPoint
 class DownloadFileFragment : Fragment() {
+
     private lateinit var binding: FragmentDownloadFileBinding
 
-    private lateinit var viewModel: DownloadFileViewModel
+    private val viewModel by activityViewModels<DownloadFileViewModel>()
 
 
     override fun onCreateView(
@@ -33,16 +35,6 @@ class DownloadFileFragment : Fragment() {
         // Inflate the layout for this fragment
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_download_file, container, false)
-
-        viewModel = ViewModelProvider(this).get(DownloadFileViewModel::class.java)
-
-        binding.buttonPaste.setOnClickListener {
-            onPaste()
-        }
-
-        binding.downloadButton.setOnClickListener {
-            onDownload()
-        }
 
 
         return binding.root
@@ -57,6 +49,15 @@ class DownloadFileFragment : Fragment() {
             binding.progressCircular.progress = it
         })
 
+        binding.buttonPaste.setOnClickListener {
+            onPaste()
+        }
+
+        binding.downloadButton.setOnClickListener {
+            onDownload()
+        }
+
+
     }
 
     private fun setupSnackbar() {
@@ -70,9 +71,27 @@ class DownloadFileFragment : Fragment() {
     }
 
     private fun onPaste() {
-        viewModel.onPaste()
-        binding.uriEditText.setText(viewModel.url.value,TextView.BufferType.EDITABLE)
-        Toast.makeText(context,"onPaste",Toast.LENGTH_SHORT).show()
+        val dataPaste: String = getDataPaste();
+
+        Timber.i("dataPaste123 $dataPaste")
+
+        binding.uriEditText.setText(dataPaste, TextView.BufferType.EDITABLE)
+
+        viewModel.onPaste(dataPaste)
+
+        Toast.makeText(context, "onPaste", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun getDataPaste(): String {
+        val myClipboard: ClipboardManager? = requireActivity().getSystemService(CLIPBOARD_SERVICE) as ClipboardManager?
+
+        return getStringFromClipboard(myClipboard);
+    }
+
+    private fun getStringFromClipboard(myClipboard: ClipboardManager?): String {
+        val abc = myClipboard?.primaryClip
+
+        return abc?.getItemAt(0)?.text.toString()
     }
 
 

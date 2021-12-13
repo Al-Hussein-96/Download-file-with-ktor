@@ -5,4 +5,5 @@
     <string name="label">Paste url here</string>
     <string name="paste">Paste</string>
     <string name="download">Download</string>
+    <string name="stop">Stop</string>
 </resources>
