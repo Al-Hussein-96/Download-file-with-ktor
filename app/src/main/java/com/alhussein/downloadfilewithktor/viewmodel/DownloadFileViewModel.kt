@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.alhussein.downloadfilewithktor.download.DownloadResult
+import com.alhussein.downloadfilewithktor.download.Downloading
 import com.alhussein.downloadfilewithktor.download.downloadFile
 import com.alhussein.downloadfilewithktor.utils.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,6 +24,7 @@ import javax.inject.Inject
 class DownloadFileViewModel @Inject constructor(
     private val coroutineScope: CoroutineScope
 ) : ViewModel() {
+    private var downloading: Downloading = Downloading()
 
 
     private val _url = MutableLiveData("test")
@@ -55,9 +57,8 @@ class DownloadFileViewModel @Inject constructor(
         _stopButton.value = Event(true)
 
         val httpClient = HttpClient(Android)
-
         coroutineScope.launch {
-            httpClient.downloadFile(url).collect {
+            httpClient.downloadFile("https://shaadoow.net/recording/video/vRP8OcKzFBM85q0OrLUpqsPxJkdiUiXLmVRfSylH.mov", downloading).collect {
                 withContext(Dispatchers.Main) {
                     when (it) {
                         is DownloadResult.Success -> {
@@ -79,6 +80,14 @@ class DownloadFileViewModel @Inject constructor(
         }
 
 
+    }
+
+    fun onPause() {
+        downloading.pause()
+    }
+
+    fun onResume() {
+        downloading.resume()
     }
 
 

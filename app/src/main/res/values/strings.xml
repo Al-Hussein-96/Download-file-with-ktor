@@ -6,4 +6,6 @@
     <string name="paste">Paste</string>
     <string name="download">Download</string>
     <string name="stop">Stop</string>
+    <string name="pause">Pause</string>
+    <string name="resume">Resume</string>
 </resources>

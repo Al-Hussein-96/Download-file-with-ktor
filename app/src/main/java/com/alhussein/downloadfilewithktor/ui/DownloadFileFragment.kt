@@ -56,6 +56,12 @@ class DownloadFileFragment : Fragment() {
         binding.downloadButton.setOnClickListener {
             onDownload()
         }
+        binding.pauseButton.setOnClickListener {
+            viewModel.onPause()
+        }
+        binding.resumeButton.setOnClickListener {
+            viewModel.onResume()
+        }
 
 
     }
@@ -83,7 +89,8 @@ class DownloadFileFragment : Fragment() {
     }
 
     private fun getDataPaste(): String {
-        val myClipboard: ClipboardManager? = requireActivity().getSystemService(CLIPBOARD_SERVICE) as ClipboardManager?
+        val myClipboard: ClipboardManager? =
+            requireActivity().getSystemService(CLIPBOARD_SERVICE) as ClipboardManager?
 
         return getStringFromClipboard(myClipboard);
     }

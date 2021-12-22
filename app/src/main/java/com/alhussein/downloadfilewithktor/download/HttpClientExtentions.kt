@@ -14,11 +14,14 @@ import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.sync.Mutex
+import timber.log.Timber
 import java.io.File
 
 
 @ExperimentalCoroutinesApi
-suspend fun HttpClient.downloadFile(url: String): Flow<DownloadResult> {
+suspend fun HttpClient.downloadFile(url: String,downloading: Downloading): Flow<DownloadResult> {
+
     return callbackFlow {
         try {
             val client = HttpClient(Android)
@@ -27,8 +30,10 @@ suspend fun HttpClient.downloadFile(url: String): Flow<DownloadResult> {
             client.get<HttpStatement>(url).execute { httpResponse ->
                 val channel: ByteReadChannel = httpResponse.receive()
                 while (!channel.isClosedForRead) {
+
                     val packet = channel.readRemaining(DEFAULT_BUFFER_SIZE.toLong())
                     while (!packet.isEmpty) {
+                        downloading.suspendIfNeeded()
                         val bytes = packet.readBytes()
                         file.appendBytes(bytes)
 
@@ -40,9 +45,9 @@ suspend fun HttpClient.downloadFile(url: String): Flow<DownloadResult> {
                         println("Received ${file.length()} bytes from ${httpResponse.contentLength()}")
                     }
                 }
-                if(httpResponse.status.isSuccess()){
+                if (httpResponse.status.isSuccess()) {
                     trySend(DownloadResult.Success)
-                }else{
+                } else {
                     trySend(DownloadResult.Error("File not downloaded"))
                 }
                 println("A file saved to ${file.path}")
@@ -50,11 +55,28 @@ suspend fun HttpClient.downloadFile(url: String): Flow<DownloadResult> {
 
         } catch (e: TimeoutCancellationException) {
             trySend(DownloadResult.Error("Connection timed out"))
-        }catch (t: Throwable){
+        } catch (t: Throwable) {
             trySend(DownloadResult.Error("Failed to connect"))
         }
         awaitClose()
 
     }
 
+}
+class Downloading {
+    private val mutex = Mutex(locked = false)
+    private var stopped: Boolean = false
+    fun pause() {
+        stopped = true
+        Timber.d("Mohammad pause: $stopped")
+    }
+    fun resume() {
+        stopped = false
+        mutex.unlock()
+    }
+    suspend fun suspendIfNeeded() {
+        if (stopped) {
+            mutex.lock()
+        }
+    }
 }
